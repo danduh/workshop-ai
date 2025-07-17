@@ -1,0 +1,1 @@
+I need you to create a detailed PRD for Database. The PRD that I will use with AI that will generate an query to create a DB Schema
