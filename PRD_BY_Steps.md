@@ -13,7 +13,7 @@
 - [ ] Set up CSS Modules or Tailwind CSS
 
 
-#### Deliverable 1.2: Core Infrastructure Components
+#### STEP[8.1] Deliverable 1.2: Core Infrastructure Components
 - [ ] Implement React Context for global state management
 - [ ] Create base layout components (Header, Sidebar, Layout wrapper)
 - [ ] Set up routing structure with React Router
