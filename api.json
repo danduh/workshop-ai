@@ -1,0 +1,755 @@
+{
+    "openapi": "3.0.0",
+    "paths": {
+        "/api": {
+            "get": {
+                "operationId": "AppController_getData",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "App"
+                ]
+            }
+        },
+        "/api/health": {
+            "get": {
+                "operationId": "HealthController_healthCheck",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Service health status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "healthy"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "example": "2025-07-17T10:30:00Z"
+                                        },
+                                        "database": {
+                                            "type": "string",
+                                            "example": "connected"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": "1.0.0"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Health check endpoint",
+                "tags": [
+                    "health"
+                ]
+            }
+        },
+        "/api/prompts": {
+            "get": {
+                "operationId": "PromptController_getAllPrompts",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "minimum": 1,
+                            "default": 1,
+                            "example": 1,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "schema": {
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 20,
+                            "example": 20,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "promptKey",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by prompt key",
+                        "schema": {
+                            "example": "CUSTOMER_SUPPORT",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "modelName",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by model name",
+                        "schema": {
+                            "example": "GPT-4o",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tags",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by tags",
+                        "schema": {
+                            "example": [
+                                "support",
+                                "customer-service"
+                            ],
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "isActive",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by active status",
+                        "schema": {
+                            "example": true,
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "createdBy",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by creator",
+                        "schema": {
+                            "example": "john.doe@company.com",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sortBy",
+                        "required": false,
+                        "in": "query",
+                        "description": "Sort by field",
+                        "schema": {
+                            "default": "dateCreation",
+                            "example": "dateCreation",
+                            "type": "string",
+                            "enum": [
+                                "dateCreation",
+                                "promptKey",
+                                "version"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sortOrder",
+                        "required": false,
+                        "in": "query",
+                        "description": "Sort order",
+                        "schema": {
+                            "default": "desc",
+                            "example": "desc",
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of prompts retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PromptListResponseDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get all prompts with filtering and pagination",
+                "tags": [
+                    "prompts"
+                ]
+            },
+            "post": {
+                "operationId": "PromptController_createPrompt",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePromptDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Prompt created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PromptSingleResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data"
+                    },
+                    "409": {
+                        "description": "Prompt with the given key already exists"
+                    }
+                },
+                "summary": "Create a new prompt",
+                "tags": [
+                    "prompts"
+                ]
+            }
+        },
+        "/api/prompts/{promptKey}": {
+            "get": {
+                "operationId": "PromptController_getActivePromptByKey",
+                "parameters": [
+                    {
+                        "name": "promptKey",
+                        "required": true,
+                        "in": "path",
+                        "description": "The unique key of the prompt",
+                        "schema": {
+                            "example": "CUSTOMER_SUPPORT_AGENT",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Active prompt retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PromptSingleResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No active prompt found with the given key"
+                    }
+                },
+                "summary": "Get active prompt by key",
+                "tags": [
+                    "prompts"
+                ]
+            }
+        },
+        "/api/prompts/{promptKey}/versions": {
+            "get": {
+                "operationId": "PromptController_getVersionsByKey",
+                "parameters": [
+                    {
+                        "name": "promptKey",
+                        "required": true,
+                        "in": "path",
+                        "description": "The unique key of the prompt",
+                        "schema": {
+                            "example": "CUSTOMER_SUPPORT_AGENT",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "example": 1,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "schema": {
+                            "example": 20,
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Prompt versions retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PromptListResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Prompt not found"
+                    }
+                },
+                "summary": "Get all versions of a prompt",
+                "tags": [
+                    "prompts"
+                ]
+            },
+            "post": {
+                "operationId": "PromptController_createVersion",
+                "parameters": [
+                    {
+                        "name": "promptKey",
+                        "required": true,
+                        "in": "path",
+                        "description": "The unique key of the prompt",
+                        "schema": {
+                            "example": "CUSTOMER_SUPPORT_AGENT",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateVersionDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Prompt version created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PromptSingleResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data"
+                    },
+                    "404": {
+                        "description": "Prompt not found"
+                    },
+                    "409": {
+                        "description": "Version already exists"
+                    }
+                },
+                "summary": "Create a new version of an existing prompt",
+                "tags": [
+                    "prompts"
+                ]
+            }
+        },
+        "/api/prompts/{promptKey}/activate/{version}": {
+            "patch": {
+                "operationId": "PromptController_activateVersion",
+                "parameters": [
+                    {
+                        "name": "promptKey",
+                        "required": true,
+                        "in": "path",
+                        "description": "The unique key of the prompt",
+                        "schema": {
+                            "example": "CUSTOMER_SUPPORT_AGENT",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "required": true,
+                        "in": "path",
+                        "description": "The version to activate",
+                        "schema": {
+                            "example": "1.0.0",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Prompt version activated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PromptSingleResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Prompt or version not found"
+                    }
+                },
+                "summary": "Activate a specific version of a prompt",
+                "tags": [
+                    "prompts"
+                ]
+            }
+        },
+        "/api/prompts/{id}": {
+            "delete": {
+                "operationId": "PromptController_deletePrompt",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "The unique ID of the prompt",
+                        "schema": {
+                            "example": "550e8400-e29b-41d4-a716-446655440000",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Prompt deleted successfully"
+                    },
+                    "404": {
+                        "description": "Prompt not found"
+                    },
+                    "409": {
+                        "description": "Cannot delete active prompt"
+                    }
+                },
+                "summary": "Delete a prompt",
+                "tags": [
+                    "prompts"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "System Prompt Management API",
+        "description": "RESTful API for centralized management of versioned system prompts for AI applications",
+        "version": "1.0.0",
+        "contact": {}
+    },
+    "tags": [
+        {
+            "name": "prompts",
+            "description": "Prompt management endpoints"
+        },
+        {
+            "name": "health",
+            "description": "Health check endpoints"
+        }
+    ],
+    "servers": [],
+    "components": {
+        "schemas": {
+            "PromptResponseDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "promptKey": {
+                        "type": "string",
+                        "description": "Unique key for the prompt",
+                        "example": "CUSTOMER_SUPPORT_AGENT"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the prompt",
+                        "example": "1.0.0"
+                    },
+                    "isActive": {
+                        "type": "boolean",
+                        "description": "Whether this version is active",
+                        "example": true
+                    },
+                    "dateCreation": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Creation date of the prompt",
+                        "example": "2025-07-17T10:30:00Z"
+                    },
+                    "modelName": {
+                        "type": "string",
+                        "description": "Model name for which this prompt is designed",
+                        "example": "GPT-4o"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "The actual prompt content",
+                        "example": "You are a helpful customer support agent..."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the prompt",
+                        "example": "Primary customer support prompt"
+                    },
+                    "tags": {
+                        "description": "Tags associated with the prompt",
+                        "example": [
+                            "support",
+                            "customer-service"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "createdBy": {
+                        "type": "string",
+                        "description": "Creator of the prompt",
+                        "example": "john.doe@company.com"
+                    }
+                },
+                "required": [
+                    "id",
+                    "promptKey",
+                    "version",
+                    "isActive",
+                    "dateCreation",
+                    "modelName",
+                    "content",
+                    "tags",
+                    "createdBy"
+                ]
+            },
+            "PaginationDto": {
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "type": "number",
+                        "description": "Current page number",
+                        "example": 1
+                    },
+                    "limit": {
+                        "type": "number",
+                        "description": "Number of items per page",
+                        "example": 20
+                    },
+                    "total": {
+                        "type": "number",
+                        "description": "Total number of items",
+                        "example": 150
+                    },
+                    "totalPages": {
+                        "type": "number",
+                        "description": "Total number of pages",
+                        "example": 8
+                    }
+                },
+                "required": [
+                    "page",
+                    "limit",
+                    "total",
+                    "totalPages"
+                ]
+            },
+            "PromptListResponseDto": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "description": "List of prompts",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PromptResponseDto"
+                        }
+                    },
+                    "pagination": {
+                        "description": "Pagination information",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/PaginationDto"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "data",
+                    "pagination"
+                ]
+            },
+            "PromptSingleResponseDto": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "description": "Prompt data",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/PromptResponseDto"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "data"
+                ]
+            },
+            "CreatePromptDto": {
+                "type": "object",
+                "properties": {
+                    "promptKey": {
+                        "type": "string",
+                        "description": "Unique key for the prompt",
+                        "example": "CUSTOMER_SUPPORT_AGENT",
+                        "minLength": 3,
+                        "maxLength": 100
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the prompt (semantic versioning or timestamp-based)",
+                        "example": "1.0.0",
+                        "maxLength": 50
+                    },
+                    "modelName": {
+                        "type": "string",
+                        "description": "Model name for which this prompt is designed",
+                        "example": "GPT-4o",
+                        "enum": [
+                            "GPT-4o",
+                            "GPT-4",
+                            "GPT-3.5-turbo",
+                            "Claude-3",
+                            "Claude-2",
+                            "Gemini-Pro"
+                        ]
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "The actual prompt content",
+                        "example": "You are a helpful customer support agent...",
+                        "maxLength": 50000
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the prompt",
+                        "example": "Primary customer support prompt",
+                        "maxLength": 1000
+                    },
+                    "tags": {
+                        "description": "Tags associated with the prompt",
+                        "example": [
+                            "support",
+                            "customer-service"
+                        ],
+                        "maxItems": 20,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "createdBy": {
+                        "type": "string",
+                        "description": "Creator of the prompt",
+                        "example": "john.doe@company.com",
+                        "maxLength": 255
+                    },
+                    "isActive": {
+                        "type": "boolean",
+                        "description": "Whether this version should be active",
+                        "example": false,
+                        "default": false
+                    }
+                },
+                "required": [
+                    "promptKey",
+                    "modelName",
+                    "content",
+                    "createdBy"
+                ]
+            },
+            "CreateVersionDto": {
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the prompt (semantic versioning or timestamp-based)",
+                        "example": "1.1.0",
+                        "maxLength": 50
+                    },
+                    "modelName": {
+                        "type": "string",
+                        "description": "Model name for which this prompt is designed",
+                        "example": "GPT-4o",
+                        "enum": [
+                            "GPT-4o",
+                            "GPT-4",
+                            "GPT-3.5-turbo",
+                            "Claude-3",
+                            "Claude-2",
+                            "Gemini-Pro"
+                        ]
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "The actual prompt content",
+                        "example": "Updated prompt content...",
+                        "maxLength": 50000
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the prompt",
+                        "example": "Updated description",
+                        "maxLength": 1000
+                    },
+                    "tags": {
+                        "description": "Tags associated with the prompt",
+                        "example": [
+                            "support",
+                            "customer-service",
+                            "v2"
+                        ],
+                        "maxItems": 20,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "createdBy": {
+                        "type": "string",
+                        "description": "Creator of the prompt",
+                        "example": "jane.doe@company.com",
+                        "maxLength": 255
+                    },
+                    "isActive": {
+                        "type": "boolean",
+                        "description": "Whether this version should be active",
+                        "example": false,
+                        "default": false
+                    }
+                },
+                "required": [
+                    "version",
+                    "modelName",
+                    "content",
+                    "createdBy"
+                ]
+            }
+        }
+    }
+}

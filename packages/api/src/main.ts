@@ -47,6 +47,7 @@ async function bootstrap() {
     
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document, {
+    jsonDocumentUrl: `${globalPrefix}/json`,
     customSiteTitle: 'Prompt Management API Documentation',
     customfavIcon: '/favicon.ico',
     customCss: '.swagger-ui .topbar { display: none }',
