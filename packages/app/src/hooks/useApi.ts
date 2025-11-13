@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../services/api';
+import { AxiosResponse } from 'axios';
+import { api } from '../services/api';
 
 export const useApiQuery = <T>(key: string[], url: string) => {
   return useQuery<T>({
     queryKey: key,
-    queryFn: () => apiClient.get(url).then(response => response.data),
+    queryFn: () => api.get(url).then((response: AxiosResponse<T>) => response.data),
   });
 };
 
@@ -19,15 +20,15 @@ export const useApiMutation = <TData, TVariables>(
     mutationFn: (data: TVariables) => {
       switch (method) {
         case 'POST':
-          return apiClient.post(url, data).then(response => response.data);
+          return api.post(url, data).then((response: AxiosResponse<TData>) => response.data);
         case 'PUT':
-          return apiClient.put(url, data).then(response => response.data);
+          return api.put(url, data).then((response: AxiosResponse<TData>) => response.data);
         case 'PATCH':
-          return apiClient.patch(url, data).then(response => response.data);
+          return api.patch(url, data).then((response: AxiosResponse<TData>) => response.data);
         case 'DELETE':
-          return apiClient.delete(url).then(response => response.data);
+          return api.delete(url).then((response: AxiosResponse<TData>) => response.data);
         default:
-          return apiClient.post(url, data).then(response => response.data);
+          return api.post(url, data).then((response: AxiosResponse<TData>) => response.data);
       }
     },
     onSuccess: () => {

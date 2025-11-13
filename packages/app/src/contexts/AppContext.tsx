@@ -27,6 +27,17 @@ export type AppAction =
   | { type: 'SET_THEME'; payload: 'light' | 'dark' }
   | { type: 'SET_GLOBAL_ERROR'; payload: string | null };
 
+// Get theme from localStorage or default to 'light'
+const getInitialTheme = (): 'light' | 'dark' => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') {
+      return saved;
+    }
+  }
+  return 'light';
+};
+
 // Initial state
 const initialState: AppState = {
   user: {
@@ -37,7 +48,7 @@ const initialState: AppState = {
   ui: {
     sidebarOpen: false,
     loading: false,
-    theme: 'light',
+    theme: getInitialTheme(),
   },
   errors: {
     global: null,
@@ -86,6 +97,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
         },
       };
     case 'SET_THEME':
+      // Persist theme to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', action.payload);
+      }
       return {
         ...state,
         ui: {
@@ -137,4 +152,60 @@ export const useAppContext = (): AppContextType => {
     throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;
+};
+
+// Convenience hooks for specific parts of the state
+export const useUser = () => {
+  const { state, dispatch } = useAppContext();
+  
+  const setUser = (user: { id: string; name: string; email: string }) => {
+    dispatch({ type: 'SET_USER', payload: user });
+  };
+  
+  const clearUser = () => {
+    dispatch({ type: 'CLEAR_USER' });
+  };
+  
+  return {
+    user: state.user,
+    setUser,
+    clearUser,
+    isLoggedIn: !!state.user.id,
+  };
+};
+
+export const useUI = () => {
+  const { state, dispatch } = useAppContext();
+  
+  const toggleSidebar = () => {
+    dispatch({ type: 'TOGGLE_SIDEBAR' });
+  };
+  
+  const setSidebarOpen = (open: boolean) => {
+    dispatch({ type: 'SET_SIDEBAR_OPEN', payload: open });
+  };
+  
+  const setLoading = (loading: boolean) => {
+    dispatch({ type: 'SET_LOADING', payload: loading });
+  };
+  
+  const setTheme = (theme: 'light' | 'dark') => {
+    dispatch({ type: 'SET_THEME', payload: theme });
+  };
+  
+  const toggleTheme = () => {
+    const newTheme = state.ui.theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  };
+  
+  return {
+    sidebarOpen: state.ui.sidebarOpen,
+    loading: state.ui.loading,
+    theme: state.ui.theme,
+    toggleSidebar,
+    setSidebarOpen,
+    setLoading,
+    setTheme,
+    toggleTheme,
+  };
 };

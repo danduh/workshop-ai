@@ -108,6 +108,35 @@ export class PromptController {
     );
   }
 
+  @Get(':promptKey/versions/:version')
+  @ApiOperation({ summary: 'Get a specific version of a prompt' })
+  @ApiParam({
+    name: 'promptKey',
+    description: 'The unique key of the prompt',
+    example: 'CUSTOMER_SUPPORT_AGENT',
+  })
+  @ApiParam({
+    name: 'version',
+    description: 'The version of the prompt',
+    example: '1.0.0',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Prompt version retrieved successfully',
+    type: PromptSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Prompt version not found',
+  })
+  async getPromptVersion(
+    @Param('promptKey') promptKey: string,
+    @Param('version') version: string,
+  ): Promise<PromptSingleResponseDto> {
+    const data = await this.promptService.getPromptVersion(promptKey, version);
+    return { data };
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new prompt' })
   @ApiResponse({

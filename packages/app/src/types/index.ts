@@ -1,3 +1,6 @@
+// Export all types
+export * from './api';
+
 export interface User {
   id: string;
   name: string;

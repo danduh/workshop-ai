@@ -16,7 +16,7 @@ import {
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAppContext } from '../../contexts/AppContext';
+import { useUI } from '../../contexts/AppContext';
 
 const drawerWidth = 240;
 
@@ -33,7 +33,7 @@ const menuItems: MenuItem[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { state, dispatch } = useAppContext();
+  const { sidebarOpen, setSidebarOpen } = useUI();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,7 +41,7 @@ export const Sidebar: React.FC = () => {
     navigate(path);
     // Close sidebar on mobile after navigation
     if (window.innerWidth < 768) {
-      dispatch({ type: 'SET_SIDEBAR_OPEN', payload: false });
+      setSidebarOpen(false);
     }
   };
 
@@ -54,7 +54,7 @@ export const Sidebar: React.FC = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          transform: state.ui.sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: (theme) =>
             theme.transitions.create('transform', {
               easing: theme.transitions.easing.sharp,

@@ -13,19 +13,10 @@ import {
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
 } from '@mui/icons-material';
-import { useAppContext } from '../../contexts/AppContext';
+import { useUI } from '../../contexts/AppContext';
 
 export const Header: React.FC = () => {
-  const { state, dispatch } = useAppContext();
-
-  const handleSidebarToggle = () => {
-    dispatch({ type: 'TOGGLE_SIDEBAR' });
-  };
-
-  const handleThemeToggle = () => {
-    const newTheme = state.ui.theme === 'light' ? 'dark' : 'light';
-    dispatch({ type: 'SET_THEME', payload: newTheme });
-  };
+  const { theme, toggleSidebar, toggleTheme } = useUI();
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -34,7 +25,7 @@ export const Header: React.FC = () => {
           color="inherit"
           aria-label="open drawer"
           edge="start"
-          onClick={handleSidebarToggle}
+          onClick={toggleSidebar}
           sx={{ mr: 2 }}
         >
           <MenuIcon />
@@ -48,8 +39,8 @@ export const Header: React.FC = () => {
           <FormControlLabel
             control={
               <Switch
-                checked={state.ui.theme === 'dark'}
-                onChange={handleThemeToggle}
+                checked={theme === 'dark'}
+                onChange={toggleTheme}
                 icon={<LightModeIcon />}
                 checkedIcon={<DarkModeIcon />}
               />

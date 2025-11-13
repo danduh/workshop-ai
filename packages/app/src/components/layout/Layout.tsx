@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { Box, Container, Toolbar } from '@mui/material';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import { useAppContext } from '../../contexts/AppContext';
+import { useUI } from '../../contexts/AppContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,7 +15,7 @@ export const Layout: React.FC<LayoutProps> = ({
   maxWidth = 'lg',
   disableGutters = false 
 }) => {
-  const { state } = useAppContext();
+  const { sidebarOpen } = useUI();
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -37,7 +37,7 @@ export const Layout: React.FC<LayoutProps> = ({
             }),
           marginLeft: {
             xs: 0,
-            md: state.ui.sidebarOpen ? 0 : '-240px',
+            md: sidebarOpen ? 0 : '-240px',
           },
         }}
       >

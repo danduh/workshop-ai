@@ -41,6 +41,16 @@ export class PromptService {
     return this.mapToResponseDto(prompt);
   }
 
+  async getPromptVersion(promptKey: string, version: string): Promise<PromptResponseDto> {
+    const prompt = await this.promptRepository.findByKeyAndVersion(promptKey, version);
+    
+    if (!prompt) {
+      throw new NotFoundException(`Prompt with key '${promptKey}' and version '${version}' not found`);
+    }
+    
+    return this.mapToResponseDto(prompt);
+  }
+
   async getVersionsByKey(
     promptKey: string,
     page = 1,

@@ -1,32 +1,36 @@
+import { Suspense } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { Route, Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { QueryProvider } from '../contexts/QueryProvider';
-import { AppProvider, useAppContext } from '../contexts/AppContext';
+import { AppProvider, useUI } from '../contexts/AppContext';
 import { getTheme } from '../theme';
 import { Layout } from '../components/layout';
-import { ErrorBoundary, GlobalErrorHandler, GlobalLoadingOverlay } from '../components/common';
-import HomePage from '../pages/HomePage';
+import { ErrorBoundary, GlobalErrorHandler, GlobalLoadingOverlay, LoadingSpinner } from '../components/common';
+import { routes } from '../router';
 
 // Inner App component that uses context
 const AppContent = () => {
-  const { state } = useAppContext();
+  const { theme } = useUI();
   
   return (
-    <ThemeProvider theme={getTheme(state.ui.theme)}>
+    <ThemeProvider theme={getTheme(theme)}>
       <CssBaseline />
       <GlobalErrorHandler />
       <GlobalLoadingOverlay />
       <Layout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/dashboard" element={<div>Dashboard Page (Coming Soon)</div>} />
-          <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
-          <Route
-            path="/page-2"
-            element={<div>Page 2 (Legacy route - will be removed)</div>}
-          />
-        </Routes>
+        <Suspense fallback={<LoadingSpinner message="Loading page..." />}>
+          <Routes>
+            {routes.map((route, index) => (
+              <Route
+                key={index}
+                path={route.path}
+                element={route.element}
+                index={route.index}
+              />
+            ))}
+          </Routes>
+        </Suspense>
       </Layout>
     </ThemeProvider>
   );

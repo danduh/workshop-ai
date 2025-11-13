@@ -13,3 +13,5 @@ export {
   GlobalLoadingOverlay, 
   useLoading 
 } from './LoadingSpinner';
+export { BreadcrumbNavigation } from './BreadcrumbNavigation';
+export { PageWrapper } from './PageWrapper';
