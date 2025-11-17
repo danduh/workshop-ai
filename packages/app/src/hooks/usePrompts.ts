@@ -32,10 +32,11 @@ export function usePrompts(filters?: FilterOptions) {
     }
   }, [filters, setFilters]);
 
-  // Fetch prompts on mount and when filters change
+  // Fetch prompts on mount and when context filters change
+  // Using JSON.stringify to track filter changes by value, not reference
   useEffect(() => {
     refreshPrompts();
-  }, [refreshPrompts]);
+  }, [JSON.stringify(contextFilters)]);
 
   return {
     data: prompts,

@@ -1,44 +1,18 @@
 import { Route, Routes } from 'react-router-dom';
-import { MainLayout } from '../components/layout';
 import { PromptsContextProvider, NotificationProvider } from '../contexts';
-import { TestNotificationsPage, TestHooksPage } from '../pages';
+import { PromptLibraryPage, TestNotificationsPage, TestHooksPage } from '../pages';
 
 export function App() {
   return (
     <NotificationProvider>
       <PromptsContextProvider>
-        <MainLayout>
       <Routes>
         {/* Test Routes - TEMPORARY */}
         <Route path="/test-notifications" element={<TestNotificationsPage />} />
         <Route path="/test-hooks" element={<TestHooksPage />} />
 
         {/* Prompt Library - Main page */}
-        <Route
-          path="/"
-          element={
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                Prompt Library
-              </h2>
-              <p className="text-gray-600">
-                Welcome! This is the prompt library page placeholder.
-              </p>
-              <div className="space-y-2 mt-4">
-                <p className="text-blue-600">
-                  <a href="/test-notifications" className="underline">
-                    → Test Notifications System
-                  </a>
-                </p>
-                <p className="text-blue-600">
-                  <a href="/test-hooks" className="underline">
-                    → Test Custom Hooks (useDebounce, useForm, useConfirmation)
-                  </a>
-                </p>
-              </div>
-            </div>
-          }
-        />
+        <Route path="/" element={<PromptLibraryPage />} />
 
         {/* Prompt Detail */}
         <Route
@@ -103,7 +77,6 @@ export function App() {
           }
         />
       </Routes>
-        </MainLayout>
       </PromptsContextProvider>
     </NotificationProvider>
   );
