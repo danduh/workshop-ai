@@ -14,7 +14,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/azure-pipelines.yml"]
   },
-  "nxCloudId": "68790b0314ff181801ad7330",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
@@ -51,7 +50,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["api-e2e/**/*"]
+      "exclude": ["api-e2e/**/*", "packages/api-e2e/**/*"]
     },
     {
       "plugin": "@nx/react/router-plugin",

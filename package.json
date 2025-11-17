@@ -2,7 +2,11 @@
   "name": "@workshop-ai/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "typeorm:api": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --dataSource packages/api/typeorm.config.ts",
+    "migration:generate:api": "npm run typeorm:api -- migration:generate",
+    "migration:run:api": "npm run typeorm:api -- migration:run"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -11,18 +15,19 @@
     "@nx/eslint": "21.2.4",
     "@nx/eslint-plugin": "21.2.4",
     "@nx/jest": "21.2.4",
-    "@nx/js": "21.2.4",
-    "@nx/nest": "^21.2.4",
-    "@nx/node": "21.2.4",
+    "@nx/js": "21.6.8",
+    "@nx/nest": "^21.6.8",
+    "@nx/node": "21.6.8",
     "@nx/react": "^21.2.4",
     "@nx/web": "21.2.4",
-    "@nx/webpack": "21.2.4",
+    "@nx/webpack": "21.6.8",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@swc/jest": "~0.2.36",
     "@types/jest": "^29.5.12",
-    "@types/node": "~18.16.9",
+    "@types/node": "20.19.9",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "jest": "^29.7.0",
@@ -43,12 +48,16 @@
   ],
   "dependencies": {
     "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.6.0",
+    "pg": "^8.16.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.0"
+    "reflect-metadata": "^0.1.14",
+    "rxjs": "^7.8.0",
+    "typeorm": "^0.3.27"
   }
 }
