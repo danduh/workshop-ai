@@ -3,10 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PromptsModule } from './prompts/prompts.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ 
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'postgres',
@@ -15,14 +19,14 @@ import { AppService } from './app.service';
         username: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: false, // Use migrations in production
         autoLoadEntities: true,
+        synchronize: false,
         ssl: {
           rejectUnauthorized: false
         },
       }),
     }),
+    PromptsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

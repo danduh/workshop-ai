@@ -2,7 +2,10 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, Index } from 
 
 @Entity({ name: 'prompts_daniel' })
 @Index(['prompt_key', 'version'], { unique: true })
-@Index(['prompt_key'], { where: `"is_active" = true AND "deleted_at" IS NULL`, unique: true })
+@Index('idx_active_prompt_key', ['prompt_key'], { 
+  unique: true,
+  where: '"is_active" = true AND "deleted_at" IS NULL'
+})
 export class Prompt {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,7 +31,7 @@ export class Prompt {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'jsonb', nullable: true, default: [] })
+  @Column({ type: 'jsonb', nullable: true })
   tags: string[];
 
   @Column({ type: 'varchar', length: 255 })
