@@ -7,6 +7,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +34,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+  
+  // Export Swagger JSON
+  const outputPath = path.resolve(process.cwd(), 'api.json');
+  fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+  Logger.log(`📄 Swagger JSON exported to: ${outputPath}`);
   
   const port = process.env.PORT || 3000;
   await app.listen(port);

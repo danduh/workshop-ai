@@ -1,0 +1,554 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return application data."
+          }
+        },
+        "summary": "Get application data",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/prompts": {
+      "get": {
+        "operationId": "PromptsController_findAll",
+        "parameters": [
+          {
+            "name": "model_name",
+            "required": false,
+            "in": "query",
+            "description": "Filter by model name",
+            "schema": {
+              "example": "gpt-4",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "in": "query",
+            "description": "Filter by tags (array of tag strings)",
+            "schema": {
+              "example": [
+                "assistant",
+                "general"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns paginated list of active prompts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPromptsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all active prompts with filtering and pagination",
+        "tags": [
+          "prompts"
+        ]
+      },
+      "post": {
+        "operationId": "PromptsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The prompt has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prompt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          }
+        },
+        "summary": "Create a new prompt",
+        "tags": [
+          "prompts"
+        ]
+      }
+    },
+    "/api/prompts/{promptKey}": {
+      "get": {
+        "operationId": "PromptsController_findOneByKey",
+        "parameters": [
+          {
+            "name": "promptKey",
+            "required": true,
+            "in": "path",
+            "description": "The prompt key identifier",
+            "schema": {
+              "example": "my-prompt-key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the active prompt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prompt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prompt not found."
+          }
+        },
+        "summary": "Get active prompt by prompt key",
+        "tags": [
+          "prompts"
+        ]
+      }
+    },
+    "/api/prompts/{promptKey}/versions": {
+      "get": {
+        "operationId": "PromptsController_findAllVersions",
+        "parameters": [
+          {
+            "name": "promptKey",
+            "required": true,
+            "in": "path",
+            "description": "The prompt key identifier",
+            "schema": {
+              "example": "my-prompt-key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns all versions of the prompt family.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prompt"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No versions found."
+          }
+        },
+        "summary": "Get all versions of a prompt family",
+        "tags": [
+          "prompts"
+        ]
+      },
+      "post": {
+        "operationId": "PromptsController_createVersion",
+        "parameters": [
+          {
+            "name": "promptKey",
+            "required": true,
+            "in": "path",
+            "description": "The prompt key identifier",
+            "schema": {
+              "example": "my-prompt-key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new version has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prompt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prompt family not found."
+          },
+          "409": {
+            "description": "Version conflict."
+          }
+        },
+        "summary": "Create a new version of an existing prompt",
+        "tags": [
+          "prompts"
+        ]
+      }
+    },
+    "/api/prompts/{promptKey}/activate/{version}": {
+      "patch": {
+        "operationId": "PromptsController_activateVersion",
+        "parameters": [
+          {
+            "name": "promptKey",
+            "required": true,
+            "in": "path",
+            "description": "The prompt key identifier",
+            "schema": {
+              "example": "my-prompt-key",
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "required": true,
+            "in": "path",
+            "description": "The version to activate",
+            "schema": {
+              "example": "2025-11-17-14-30-25",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The version has been successfully activated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Prompt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prompt or version not found."
+          }
+        },
+        "summary": "Activate a specific version of a prompt",
+        "tags": [
+          "prompts"
+        ]
+      }
+    },
+    "/api/prompts/{id}": {
+      "delete": {
+        "operationId": "PromptsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The prompt UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The prompt has been successfully deleted."
+          },
+          "400": {
+            "description": "Cannot delete an active prompt."
+          },
+          "404": {
+            "description": "Prompt not found."
+          }
+        },
+        "summary": "Soft delete a prompt (inactive prompts only)",
+        "tags": [
+          "prompts"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Workshop AI API",
+    "description": "The Workshop AI API documentation",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "prompts",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "Prompt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier (UUID)",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "prompt_key": {
+            "type": "string",
+            "description": "Prompt key identifier",
+            "example": "my-prompt-key"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version number",
+            "example": "v1.0.0"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether this version is active",
+            "example": true
+          },
+          "date_creation": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp",
+            "example": "2025-11-17T10:00:00Z"
+          },
+          "model_name": {
+            "type": "string",
+            "description": "AI model name",
+            "example": "gpt-4"
+          },
+          "content": {
+            "type": "string",
+            "description": "Prompt content/template",
+            "example": "You are a helpful assistant."
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional prompt description",
+            "example": "General assistant prompt"
+          },
+          "tags": {
+            "description": "Tags for categorization",
+            "example": [
+              "assistant",
+              "general"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_by": {
+            "type": "string",
+            "description": "User who created the prompt",
+            "example": "user@example.com"
+          },
+          "deleted_at": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Soft delete timestamp",
+            "example": null
+          }
+        },
+        "required": [
+          "id",
+          "prompt_key",
+          "version",
+          "is_active",
+          "date_creation",
+          "model_name",
+          "content",
+          "created_by"
+        ]
+      },
+      "PaginatedPromptsDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Array of prompt objects",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of items",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of items per page",
+            "example": 10
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages",
+            "example": 5
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "CreateVersionDto": {
+        "type": "object",
+        "properties": {
+          "model_name": {
+            "type": "string",
+            "description": "Name of the AI model to use",
+            "example": "gpt-4",
+            "maxLength": 100
+          },
+          "content": {
+            "type": "string",
+            "description": "The content/template of the prompt",
+            "example": "You are a helpful assistant. Please help with: {{task}}"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the prompt",
+            "example": "A general-purpose assistant prompt"
+          },
+          "tags": {
+            "description": "Optional tags for categorizing the prompt",
+            "example": [
+              "assistant",
+              "general"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_by": {
+            "type": "string",
+            "description": "User identifier who created this version",
+            "example": "john.doe@example.com",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "model_name",
+          "content",
+          "created_by"
+        ]
+      },
+      "CreatePromptDto": {
+        "type": "object",
+        "properties": {
+          "prompt_key": {
+            "type": "string",
+            "description": "Unique identifier for the prompt (lowercase letters, numbers, hyphens, and underscores only)",
+            "example": "my-prompt-key",
+            "maxLength": 255
+          },
+          "model_name": {
+            "type": "string",
+            "description": "Name of the AI model to use",
+            "example": "gpt-4",
+            "maxLength": 100
+          },
+          "content": {
+            "type": "string",
+            "description": "The content/template of the prompt",
+            "example": "You are a helpful assistant. Please help with: {{task}}"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the prompt",
+            "example": "A general-purpose assistant prompt"
+          },
+          "tags": {
+            "description": "Optional tags for categorizing the prompt",
+            "example": [
+              "assistant",
+              "general"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_by": {
+            "type": "string",
+            "description": "User who created the prompt",
+            "example": "user@example.com",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "prompt_key",
+          "model_name",
+          "content",
+          "created_by"
+        ]
+      }
+    }
+  }
+}

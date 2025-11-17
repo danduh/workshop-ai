@@ -2,9 +2,109 @@
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+System Prompt Management Application - An Nx monorepo with React frontend and NestJS backend.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+ and npm
+- PostgreSQL database
+
+### Frontend Setup
+
+1. **Navigate to the project root:**
+   ```sh
+   cd workshop-ai
+   ```
+
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+
+3. **Configure environment variables:**
+   ```sh
+   cp packages/app/.env.example packages/app/.env
+   ```
+   Edit `.env` and set:
+   - `VITE_API_BASE_URL` - Backend API URL (default: http://localhost:3000/api)
+
+4. **Run the frontend development server:**
+   ```sh
+   nx serve @workshop-ai/app
+   ```
+   The app will be available at http://localhost:4200
+
+### Backend Setup
+
+See the backend-specific documentation for API setup instructions.
+
+## 📦 Project Structure
+
+This is an Nx monorepo with the following structure:
+- `packages/app/` - React frontend with TypeScript, Vite, and Tailwind CSS
+- `packages/api/` - NestJS backend API
+- `packages/api-e2e/` - End-to-end tests for the API
+
+## 🛠️ Available Commands
+
+### Frontend Development
+```sh
+# Serve the app in development mode
+nx serve @workshop-ai/app
+
+# Build the app for production
+nx build @workshop-ai/app
+
+# Run unit tests
+nx test @workshop-ai/app
+
+# Lint the code
+nx lint @workshop-ai/app
+```
+
+### Backend Development
+```sh
+# Serve the API
+nx serve api
+
+# Build the API
+nx build api
+
+# Run tests
+nx test api
+```
+
+### Workspace Commands
+```sh
+# View project graph
+nx graph
+
+# Run affected tests
+nx affected:test
+
+# Lint all affected projects
+nx affected:lint
+```
+
+## 🎨 Tech Stack
+
+### Frontend
+- **React 18+** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Router v6** - Client-side routing
+- **Axios** - HTTP client
+
+### Backend
+- **NestJS** - Node.js framework
+- **TypeORM** - ORM for PostgreSQL
+- **PostgreSQL** - Database
+
+---
+
+✨ [Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created.
 
 ## Finish your CI setup
 
